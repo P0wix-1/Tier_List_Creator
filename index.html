@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tier List Creator</title>
+    <link rel="stylesheet" href="tailwind.min.css">
+    <script src="Sortable.min.js"></script>
+    <script type="text/javascript" src="/eel.js"></script>
+    <script src="html2canvas.min.js"></script>
+</head>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen overflow-x-hidden">
+
+    <div id="main-menu" class="block">
+        <header class="bg-gray-800 shadow-md py-4 px-8 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-white">
+                Tier List Creator <span class="text-indigo-400 text-lg font-normal">by Powix</span>
+            </h1>
+        </header>
+
+        <main class="max-w-5xl mx-auto p-6 mt-6">
+            <section class="mb-10">
+                <h2 class="text-xl mb-4 font-semibold text-gray-200">Новый Тир-Лист</h2>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex flex-grow gap-4">
+                        <input type="text" id="new-project-name"
+                               placeholder="Введите название проекта..."
+                               class="flex-grow bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors">
+                        <button onclick="createNewProject()"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-0.5 whitespace-nowrap">
+                            Создать
+                        </button>
+                    </div>
+                    <button onclick="importProject()"
+                            class="bg-gray-700 hover:bg-gray-600 border border-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-0.5 whitespace-nowrap flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-green-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Импорт .zip
+                    </button>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-xl mb-4 font-semibold text-gray-200">Ваши проекты</h2>
+                <div id="projects-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="editor-screen" class="hidden">
+        <header class="bg-gray-800 shadow-md py-4 px-8 flex justify-between items-center border-b border-gray-700">
+            <div class="flex items-center gap-6">
+                <button onclick="showMainMenu()"
+                        class="text-gray-300 hover:text-white border border-gray-600 hover:bg-gray-700 py-2 px-4 rounded-lg transition-colors">
+                    &larr; Назад
+                </button>
+                <h2 id="current-project-title" class="text-xl font-bold text-white">Название проекта</h2>
+            </div>
+            <button onclick="openExportModal()" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-semibold transition-colors shadow-lg">
+                Экспорт
+            </button>
+        </header>
+
+        <main class="max-w-6xl mx-auto p-6 mt-4 flex flex-col h-[calc(100vh-120px)]">
+
+            <div id="tier-list-container" class="flex-grow flex flex-col gap-2 overflow-y-auto pr-2 pb-6 custom-scrollbar">
+
+                <div class="flex bg-gray-800 rounded-lg overflow-hidden border border-gray-700 shadow-sm min-h-[100px]">
+                    <div class="w-24 md:w-32 flex items-center justify-center font-black text-3xl text-gray-900 bg-red-400 shrink-0 select-none">S</div>
+                    <div class="flex-1 p-2 flex flex-wrap gap-2 sortable-list" id="tier-s"></div>
+                    <div data-html2canvas-ignore="true" class="w-12 bg-gray-900 flex items-center justify-center cursor-pointer hover:bg-gray-700 text-gray-500 transition-colors shrink-0" onclick="openTierModal(this)">⚙️</div>
+                </div>
+
+                <div class="flex bg-gray-800 rounded-lg overflow-hidden border border-gray-700 shadow-sm min-h-[100px]">
+                    <div class="w-24 md:w-32 flex items-center justify-center font-black text-3xl text-gray-900 bg-orange-400 shrink-0 select-none">A</div>
+                    <div class="flex-1 p-2 flex flex-wrap gap-2 sortable-list" id="tier-a"></div>
+                    <div data-html2canvas-ignore="true" class="w-12 bg-gray-900 flex items-center justify-center cursor-pointer hover:bg-gray-700 text-gray-500 transition-colors shrink-0" onclick="openTierModal(this)">⚙️</div>
+                </div>
+
+                <div class="flex bg-gray-800 rounded-lg overflow-hidden border border-gray-700 shadow-sm min-h-[100px]">
+                    <div class="w-24 md:w-32 flex items-center justify-center font-black text-3xl text-gray-900 bg-yellow-400 shrink-0 select-none">B</div>
+                    <div class="flex-1 p-2 flex flex-wrap gap-2 sortable-list" id="tier-b"></div>
+                    <div data-html2canvas-ignore="true" class="w-12 bg-gray-900 flex items-center justify-center cursor-pointer hover:bg-gray-700 text-gray-500 transition-colors shrink-0" onclick="openTierModal(this)">⚙️</div>
+                </div>
+
+                <div class="flex bg-gray-800 rounded-lg overflow-hidden border border-gray-700 shadow-sm min-h-[100px]">
+                    <div class="w-24 md:w-32 flex items-center justify-center font-black text-3xl text-gray-900 bg-green-400 shrink-0 select-none">C</div>
+                    <div class="flex-1 p-2 flex flex-wrap gap-2 sortable-list" id="tier-c"></div>
+                    <div data-html2canvas-ignore="true" class="w-12 bg-gray-900 flex items-center justify-center cursor-pointer hover:bg-gray-700 text-gray-500 transition-colors shrink-0" onclick="openTierModal(this)">⚙️</div>
+                </div>
+
+                <button data-html2canvas-ignore="true" id="add-tier-btn"
+                        onclick="addNewTier()"
+                        class="w-full py-4 mt-2 border-2 border-dashed border-gray-600 text-gray-400 hover:text-white hover:border-indigo-500 rounded-lg transition-all font-bold shrink-0 bg-transparent">
+                    + Добавить ряд
+                </button>
+            </div>
+
+            <div data-html2canvas-ignore="true" class="mt-4 bg-gray-800 p-4 rounded-lg border border-gray-700 shadow-xl shrink-0">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-lg font-bold text-gray-300">Склад объектов</h3>
+                    <button onclick="uploadRealImages()" class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-all shadow-md active:scale-95">
+                        + Добавить фото
+                    </button>
+                </div>
+
+                <div class="min-h-[130px] bg-gray-900 rounded-lg p-3 flex flex-wrap gap-3 sortable-list border border-gray-700 inner-shadow" id="unsorted-pool">
+                    <p id="empty-pool-text" class="text-gray-600 text-sm italic w-full text-center mt-10 pointer-events-none">Перетащите сюда изображения или нажмите кнопку выше</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+
+    <div id="tier-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-6 rounded-lg border border-gray-700 w-96 shadow-2xl">
+            <h3 class="text-xl font-bold mb-4 text-white">Настройки ряда</h3>
+
+            <div class="mb-4">
+                <label class="block text-sm text-gray-400 mb-1">Название:</label>
+                <input type="text" id="tier-title-input" class="w-full bg-gray-900 border border-gray-600 rounded p-2 text-white outline-none focus:border-indigo-500" maxlength="4">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm text-gray-400 mb-2">Цвет:</label>
+                <div class="flex gap-2 flex-wrap" id="color-picker">
+                    <button class="w-8 h-8 rounded-full bg-red-400 border-2 border-transparent focus:outline-none" onclick="selectColor('bg-red-400')"></button>
+                    <button class="w-8 h-8 rounded-full bg-orange-400 border-2 border-transparent focus:outline-none" onclick="selectColor('bg-orange-400')"></button>
+                    <button class="w-8 h-8 rounded-full bg-yellow-400 border-2 border-transparent focus:outline-none" onclick="selectColor('bg-yellow-400')"></button>
+                    <button class="w-8 h-8 rounded-full bg-green-400 border-2 border-transparent focus:outline-none" onclick="selectColor('bg-green-400')"></button>
+                    <button class="w-8 h-8 rounded-full bg-blue-400 border-2 border-transparent focus:outline-none" onclick="selectColor('bg-blue-400')"></button>
+                    <button class="w-8 h-8 rounded-full bg-purple-400 border-2 border-transparent focus:outline-none" onclick="selectColor('bg-purple-400')"></button>
+                    <button class="w-8 h-8 rounded-full bg-pink-400 border-2 border-transparent focus:outline-none" onclick="selectColor('bg-pink-400')"></button>
+                    <button class="w-8 h-8 rounded-full bg-gray-400 border-2 border-transparent focus:outline-none" onclick="selectColor('bg-gray-400')"></button>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button onclick="deleteTier()" class="text-red-400 hover:text-red-300 text-sm font-semibold">Удалить ряд</button>
+                <div class="flex gap-2">
+                    <button onclick="closeTierModal()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded">Отмена</button>
+                    <button onclick="saveTierSettings()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-bold">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="image-preview-modal" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[60] cursor-zoom-out transition-opacity duration-300 opacity-0" onclick="closeImagePreview()">
+        <img id="preview-image" src="" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl transform scale-95 transition-transform duration-300" alt="Preview">
+
+        <button class="absolute top-6 right-8 text-white text-5xl hover:text-red-400 font-bold transition-colors">&times;</button>
+    </div>
+    <div id="export-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[70]" onclick="closeExportModal()">
+        <div class="bg-gray-800 p-8 rounded-xl border border-gray-700 w-[500px] shadow-2xl relative" onclick="event.stopPropagation()">
+
+            <button onclick="closeExportModal()" class="absolute top-4 right-5 text-gray-400 hover:text-white text-3xl font-bold transition-colors">&times;</button>
+
+            <h3 class="text-2xl font-bold mb-6 text-white text-center">Экспорт проекта</h3>
+
+            <div class="grid grid-cols-2 gap-6">
+                <div onclick="exportToImage()" class="bg-gray-900 border-2 border-gray-700 hover:border-indigo-500 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(99,102,241,0.3)] group">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-14 h-14 mb-4 text-indigo-400 group-hover:text-indigo-300 transition-colors">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    </svg>
+                    <span class="font-bold text-gray-200 text-center">Сохранить как фото</span>
+                    <span class="text-xs text-gray-500 mt-2 text-center">JPEG файл для соцсетей</span>
+                </div>
+
+                <div onclick="exportToFile()" class="bg-gray-900 border-2 border-gray-700 hover:border-green-500 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_15px_rgba(34,197,94,0.3)] group">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-14 h-14 mb-4 text-green-400 group-hover:text-green-300 transition-colors">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                    </svg>
+                    <span class="font-bold text-gray-200 text-center">Экспорт проекта</span>
+                    <span class="text-xs text-gray-500 mt-2 text-center">Файл .zip для передачи</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
